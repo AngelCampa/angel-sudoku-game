@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { SudokuGrid } from '../utils/SudokuGrid';
-import { isValidMove } from '../utils/SudokuGenerator';
 
 interface SudokuGridProps {
   grid: SudokuGrid;
@@ -9,11 +8,11 @@ interface SudokuGridProps {
 
 const SudokuGridComponent: React.FC<SudokuGridProps> = ({ grid }) => {
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
-  const [error, setError] = useState<string>(''); // Initialize error state
+  const [error, setError] = useState<string>('');
 
   const handleCellPress = (row: number, col: number) => {
     setSelectedCell({ row, col });
-    setError(''); // Clear any previous errors
+    setError('');
   };
 
   const handleInputChange = (text: string) => {
@@ -25,23 +24,47 @@ const SudokuGridComponent: React.FC<SudokuGridProps> = ({ grid }) => {
           // Update the grid with the new number
           const updatedGrid = [...grid]; // Create a copy of the grid
           updatedGrid[selectedCell.row][selectedCell.col] = num; // Update the selected cell
-          // TODO: Update your grid state here (you might use a state updater function)
+
+  // Implement your correctness logic here...
+  // If the number is correct, update the grid with the new number
+  // If the number is incorrect, display an error message
+  // Hint: Use the isCorrect() function to check if the number is correct
+  // Hint: Use the setError() function to display an error message
+          
         } else {
-          setError('Invalid number'); // Set an error message if the input is incorrect
+          setError('Incorrect move!');
         }
-      } else {
-        setError('Enter a number between 1 and 9'); // Set an error message for invalid input
       }
     }
   };
 
-  // Implement your correctness logic here...
-  const isCorrect = (row: number, col: number, num: number): boolean => {
-    // Implement your correctness logic here...
-    // Return true if the number is correct, false otherwise
-    // You can compare it with the original solution grid or implement any other validation logic.
-    // Replace this with your actual correctness logic
-    return true; // Replace with your logic
+  const isCorrect = (row: number, col: number, num: number) => {
+    // Check if the number is already present in the row
+    for (let i = 0; i < 9; i++) {
+      if (grid[row][i] === num) {
+        return false;
+      }
+    }
+
+    // Check if the number is already present in the column
+    for (let i = 0; i < 9; i++) {
+      if (grid[i][col] === num) {
+        return false;
+      }
+    }
+
+    // Check if the number is already present in the 3x3 box
+    const boxRow = Math.floor(row / 3) * 3;
+    const boxCol = Math.floor(col / 3) * 3;
+    for (let i = boxRow; i < boxRow + 3; i++) {
+      for (let j = boxCol; j < boxCol + 3; j++) {
+        if (grid[i][j] === num) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   };
 
   return (
