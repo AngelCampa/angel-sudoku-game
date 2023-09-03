@@ -1,4 +1,3 @@
-// SudokuGridComponent.tsx
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SudokuGrid } from '../utils/SudokuGrid';
@@ -12,6 +11,7 @@ const SudokuGridComponent: React.FC<SudokuGridProps> = ({ grid }) => {
 
   const handleCellPress = (row: number, col: number) => {
     setSelectedCell({ row, col });
+  };
 
   const isCorrect = (row: number, col: number, num: number): boolean => {
     // Check row
@@ -33,14 +33,13 @@ const SudokuGridComponent: React.FC<SudokuGridProps> = ({ grid }) => {
     const startCol = Math.floor(col / 3) * 3;
     for (let i = startRow; i < startRow + 3; i++) {
       for (let j = startCol; j < startCol + 3; j++) {
-        if (grid[i][j] === num && i !== row && j !== col) {
+        if (grid[i][j] === num && (i !== row || j !== col)) {
           return false;
         }
       }
     }
 
     return true;
-  };
   };
 
   return (
@@ -56,7 +55,16 @@ const SudokuGridComponent: React.FC<SudokuGridProps> = ({ grid }) => {
               ]}
               onPress={() => handleCellPress(rowIndex, colIndex)}
             >
-              <Text style={styles.cellText}>{cell !== 0 ? cell.toString() : ''}</Text>
+              <Text
+                style={[
+                  styles.cellText,
+                  {
+                    color: isCorrect(rowIndex, colIndex, cell) ? 'black' : 'red',
+                  },
+                ]}
+              >
+                {cell !== 0 ? cell.toString() : ''}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>

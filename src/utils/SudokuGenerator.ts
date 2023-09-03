@@ -115,3 +115,5 @@ export function generateSudokuPuzzle(difficulty: Difficulty): SudokuGrid {
 
   
   
+export { SudokuGrid };
+
