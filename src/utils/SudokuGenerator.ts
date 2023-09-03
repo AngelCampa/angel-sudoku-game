@@ -1,4 +1,4 @@
-import { SudokuGrid, emptyGrid } from '../SudokuGrid/SudokuGrid';
+import { SudokuGrid, emptyGrid } from './SudokuGrid';
 
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
@@ -72,46 +72,46 @@ export enum Difficulty {
     Hard,
   }
   
-  export function generateSudokuPuzzle(difficulty: Difficulty): SudokuGrid {
-    const solvedGrid = generateSudokuGrid(); // Generate a complete Sudoku grid
-  
-    // Function to remove numbers based on difficulty level
-    const removeNumbers = (grid: SudokuGrid, count: number): SudokuGrid => {
-      const newGrid = JSON.parse(JSON.stringify(grid));
-      let removedCount = 0;
-  
-      while (removedCount < count) {
-        const row = Math.floor(Math.random() * 9);
-        const col = Math.floor(Math.random() * 9);
-  
-        if (newGrid[row][col] !== 0) {
-          newGrid[row][col] = 0;
-          removedCount++;
-        }
+export function generateSudokuPuzzle(difficulty: Difficulty): SudokuGrid {
+  const solvedGrid = generateSudokuGrid(); // Generate a complete Sudoku grid
+
+  // Function to remove numbers based on difficulty level
+  const removeNumbers = (grid: SudokuGrid, count: number): SudokuGrid => {
+    const newGrid = JSON.parse(JSON.stringify(grid));
+    let removedCount = 0;
+
+    while (removedCount < count) {
+      const row = Math.floor(Math.random() * 9);
+      const col = Math.floor(Math.random() * 9);
+
+      if (newGrid[row][col] !== 0) {
+        newGrid[row][col] = 0;
+        removedCount++;
       }
-  
-      return newGrid;
-    };
-  
-    // Determine the number of cells to remove based on difficulty
-    let cellsToRemove = 0;
-    switch (difficulty) {
-      case Difficulty.Easy:
-        cellsToRemove = 35;
-        break;
-      case Difficulty.Medium:
-        cellsToRemove = 45;
-        break;
-      case Difficulty.Hard:
-        cellsToRemove = 55;
-        break;
-      default:
-        cellsToRemove = 45; // Default to medium difficulty
     }
-  
-    return removeNumbers(solvedGrid, cellsToRemove);
+
+    return newGrid;
+  };
+
+  // Determine the number of cells to remove based on difficulty
+  let cellsToRemove = 0;
+  switch (difficulty) {
+    case Difficulty.Easy:
+      cellsToRemove = 35;
+      break;
+    case Difficulty.Medium:
+      cellsToRemove = 45;
+      break;
+    case Difficulty.Hard:
+      cellsToRemove = 55;
+      break;
+    default:
+      cellsToRemove = 45; // Default to medium difficulty
   }
-  
-  
+
+  return removeNumbers(solvedGrid, cellsToRemove);
+}
+
+
   
   

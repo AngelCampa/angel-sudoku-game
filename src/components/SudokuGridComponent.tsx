@@ -1,7 +1,7 @@
 // SudokuGridComponent.tsx
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { SudokuGrid } from './SudokuGrid';
+import { SudokuGrid } from '../utils/SudokuGrid';
 
 interface SudokuGridProps {
   grid: SudokuGrid;
