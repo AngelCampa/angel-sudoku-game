@@ -25,7 +25,8 @@ const SudokuGridComponent: React.FC<SudokuGridProps> = ({ grid, setGrid }) => {
 
   // Initialize cellValues based on the grid prop
   useEffect(() => {
-    setCellValues([...grid]);
+    // Set the cellValues to a deep copy of the grid prop
+    setCellValues(JSON.parse(JSON.stringify(grid)));
   }, [grid]);
 
   const textInputRef = useRef<TextInput | null>(null);
