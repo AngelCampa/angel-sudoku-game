@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { SudokuGrid } from '../utils/SudokuGrid';
+import { isValidMove } from '../utils/SudokuGenerator';
 
 interface SudokuGridProps {
   grid: SudokuGrid;
@@ -8,38 +9,39 @@ interface SudokuGridProps {
 
 const SudokuGridComponent: React.FC<SudokuGridProps> = ({ grid }) => {
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
+  const [error, setError] = useState<string>(''); // Initialize error state
 
   const handleCellPress = (row: number, col: number) => {
     setSelectedCell({ row, col });
+    setError(''); // Clear any previous errors
   };
 
-  const isCorrect = (row: number, col: number, num: number): boolean => {
-    // Check row
-    for (let i = 0; i < 9; i++) {
-      if (grid[row][i] === num && i !== col) {
-        return false;
-      }
-    }
+  const handleInputChange = (text: string) => {
+    if (selectedCell) {
+      const num = parseInt(text, 10);
 
-    // Check column
-    for (let i = 0; i < 9; i++) {
-      if (grid[i][col] === num && i !== row) {
-        return false;
-      }
-    }
-
-    // Check 3x3 square
-    const startRow = Math.floor(row / 3) * 3;
-    const startCol = Math.floor(col / 3) * 3;
-    for (let i = startRow; i < startRow + 3; i++) {
-      for (let j = startCol; j < startCol + 3; j++) {
-        if (grid[i][j] === num && (i !== row || j !== col)) {
-          return false;
+      if (!isNaN(num) && num >= 1 && num <= 9) {
+        if (isCorrect(selectedCell.row, selectedCell.col, num)) {
+          // Update the grid with the new number
+          const updatedGrid = [...grid]; // Create a copy of the grid
+          updatedGrid[selectedCell.row][selectedCell.col] = num; // Update the selected cell
+          // TODO: Update your grid state here (you might use a state updater function)
+        } else {
+          setError('Invalid number'); // Set an error message if the input is incorrect
         }
+      } else {
+        setError('Enter a number between 1 and 9'); // Set an error message for invalid input
       }
     }
+  };
 
-    return true;
+  // Implement your correctness logic here...
+  const isCorrect = (row: number, col: number, num: number): boolean => {
+    // Implement your correctness logic here...
+    // Return true if the number is correct, false otherwise
+    // You can compare it with the original solution grid or implement any other validation logic.
+    // Replace this with your actual correctness logic
+    return true; // Replace with your logic
   };
 
   return (
@@ -55,20 +57,18 @@ const SudokuGridComponent: React.FC<SudokuGridProps> = ({ grid }) => {
               ]}
               onPress={() => handleCellPress(rowIndex, colIndex)}
             >
-              <Text
-                style={[
-                  styles.cellText,
-                  {
-                    color: isCorrect(rowIndex, colIndex, cell) ? 'black' : 'red',
-                  },
-                ]}
-              >
-                {cell !== 0 ? cell.toString() : ''}
-              </Text>
+              <TextInput
+                style={styles.cellText}
+                value={cell !== 0 ? cell.toString() : ''}
+                onChangeText={handleInputChange}
+                keyboardType="numeric"
+                maxLength={1}
+              />
             </TouchableOpacity>
           ))}
         </View>
       ))}
+      {error && <Text style={styles.errorText}>{error}</Text>} {/* Render error message */}
     </View>
   );
 };
@@ -93,6 +93,9 @@ const styles = StyleSheet.create({
   },
   selectedCell: {
     backgroundColor: 'lightblue',
+  },
+  errorText: {
+    color: 'red', // Style the error text as needed
   },
 });
 

@@ -9,7 +9,7 @@ function shuffleArray<T>(array: T[]): T[] {
   return shuffled;
 }
 
-function isValidMove(grid: SudokuGrid, row: number, col: number, num: number): boolean {
+export function isValidMove(grid: SudokuGrid, row: number, col: number, num: number): boolean {
   // Check row
   for (let i = 0; i < 9; i++) {
     if (grid[row][i] === num) {
