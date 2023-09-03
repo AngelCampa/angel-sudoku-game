@@ -112,8 +112,4 @@ export function generateSudokuPuzzle(difficulty: Difficulty): SudokuGrid {
   return removeNumbers(solvedGrid, cellsToRemove);
 }
 
-
-  
-  
 export { SudokuGrid };
-
