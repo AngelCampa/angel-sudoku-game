@@ -39,8 +39,7 @@ const SudokuGridComponent: React.FC<SudokuGridProps> = ({ grid, setGrid }) => {
     }
   };
 
-  const handleInputChange = (text: string) => {
-    console.log("handleInputChange called with text:", text);
+const handleInputChange = (text: string) => {
     if (selectedCell) {
       const num = parseInt(text, 10);
 
