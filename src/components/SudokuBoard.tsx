@@ -118,8 +118,6 @@ const checkCorrectness = (grid: SudokuGrid) => {
   }
 };
 
-// ...
-
 const SudokuBoard = () => {
   const [grid, setGrid] = useState<SudokuGrid>(generateSudoku());
   const [inputMode, setInputMode] = useState<boolean>(false);
@@ -181,6 +179,33 @@ const SudokuBoard = () => {
     }
   };
 
+  // Calculate the opacity for a number button
+  const calculateButtonOpacity = (row: number, col: number) => {
+    if (inputMode && selectedNumber !== null) {
+      return cellSelected[row][col] ? 0.5 : 1;
+    }
+    return 1;
+  };
+
+  // Create the number buttons
+  const numberButtons = [];
+  for (let number = 1; number <= 9; number++) {
+    numberButtons.push(
+      <TouchableOpacity
+        key={`number-${number}`}
+        style={[
+          styles.numberButton,
+          {
+            opacity: inputMode && selectedNumber === number ? 0.5 : 1,
+          },
+        ]}
+        onPress={() => handleNumberButtonClick(number)}
+      >
+        <Text style={styles.numberButtonText}>{number}</Text>
+      </TouchableOpacity>
+    );
+  }
+
   useEffect(() => {
     setGrid(generateSudoku());
   }, []);
@@ -214,29 +239,7 @@ const SudokuBoard = () => {
           </View>
         ))}
       </View>
-      <View style={styles.numberButtonContainer}>
-        {grid.map((rowData, rowIndex) =>
-          rowData.map((value, colIndex) => (
-            <TouchableOpacity
-              key={`number-${rowIndex}-${colIndex}`}
-              style={[
-                styles.numberButton,
-                {
-                  opacity:
-                    inputMode &&
-                    selectedNumber !== null &&
-                    cellSelected[rowIndex][colIndex]
-                      ? 0.5
-                      : 1,
-                },
-              ]}
-              onPress={() => handleNumberButtonClick(value)}
-            >
-              <Text style={styles.numberButtonText}>{value || ""}</Text>
-            </TouchableOpacity>
-          ))
-        )}
-      </View>
+      <View style={styles.numberButtonContainer}>{numberButtons}</View>
     </View>
   );
 };
@@ -281,8 +284,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: 5,
     borderRadius: 5,
-    opacity: ({ row, col }) =>
-      cellSelected[row][col] && inputMode && selectedNumber !== null ? 0.5 : 1,
+    opacity: (row, col) => calculateOpacity(row, col), // Apply opacity based on conditions
   },
   numberButtonText: {
     fontSize: 20,
