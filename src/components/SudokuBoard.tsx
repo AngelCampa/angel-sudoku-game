@@ -181,6 +181,9 @@ const SudokuBoard = () => {
       } catch (error) {
         console.error("Error handling input submit:", error);
       }
+    } else {
+      // Add logic to call handleInputSubmit when a cell is clicked in input mode
+      handleInputSubmit(row, col);
     }
   };
 
@@ -240,8 +243,20 @@ const SudokuBoard = () => {
     // Handle input submission
     if (inputMode && selectedNumber !== null) {
       try {
-        if (isPlacementValid(grid, solvedGrid, row, col, selectedNumber)) {
-          // Rest of the code remains the same...
+        // Check if the placement is valid
+        if (isPlacementValid(grid, generateSolvedSudoku(), row, col, selectedNumber)) {
+          const updatedGrid = [...grid];
+          updatedGrid[row][col] = selectedNumber;
+          setGrid(updatedGrid);
+          setInputMode(false);
+          setSelectedNumber(null);
+          setCellSelected((prevCellSelected) => {
+            const updatedCellSelected = prevCellSelected.map(
+              (rowArray) => rowArray.map(() => false) // Deselect all cells
+            );
+            return updatedCellSelected;
+          });
+          checkWinningCondition(updatedGrid);
         } else {
           // Placement is invalid, show an error message
           Alert.alert(
@@ -253,7 +268,7 @@ const SudokuBoard = () => {
         console.error("Error handling input submit:", error);
       }
     }
-  };
+  };  
 
   const checkWinningCondition = (currentGrid: SudokuGrid) => {
     try {
@@ -313,7 +328,7 @@ const SudokuBoard = () => {
                     backgroundColor: getCellBackgroundColor(rowIndex, colIndex),
                   },
                 ]}
-                onPress={() => handleCellClick(rowIndex, colIndex)}
+                onPress={() => handleCellClick(rowIndex, colIndex)} // Call handleCellClick
               >
                 <Text style={styles.cellText}>{value || ""}</Text>
               </TouchableOpacity>
