@@ -284,14 +284,6 @@ const SudokuBoard = () => {
     }
   };  
 
-  // Calculate the opacity for a number button
-  const calculateButtonOpacity = (row: number, col: number) => {
-    if (inputMode && selectedNumber !== null) {
-      return cellSelected[row][col] ? 0.5 : 1;
-    }
-    return 1;
-  };
-
   // Create the number buttons
   const numberButtons = [];
   for (let number = 1; number <= 9; number++) {
