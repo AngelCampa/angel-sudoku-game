@@ -1,26 +1,13 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import DifficultySelectionScreen from './src/screens/DifficultySelectionScreen'; // Adjust the path as needed
-import SudokuGameScreen from './src/screens/SudokuGameScreen'; // Adjust the path as needed
+import { View } from 'react-native';
+import SudokuBoard from './src/components/SudokuBoard';
 
-const Stack = createStackNavigator();
-
-export default function App() {
+const App = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="DifficultySelection">
-        <Stack.Screen
-          name="DifficultySelection"
-          component={DifficultySelectionScreen}
-          options={{ title: 'Select Difficulty' }}
-        />
-        <Stack.Screen
-          name="SudokuGame"
-          component={SudokuGameScreen}
-          options={{ title: 'Sudoku Game' }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <View>
+      <SudokuBoard />
+    </View>
   );
-}
+};
+
+export default App;
