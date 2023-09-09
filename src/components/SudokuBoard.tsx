@@ -127,18 +127,36 @@ const SudokuBoard = () => {
   );
 
   const handleCellClick = (row: number, col: number) => {
-    if (!inputMode && grid[row][col] === null) {
-      // If not in input mode and the selected square is empty, enable input mode
-      setCellSelected((prevCellSelected) => {
-        const updatedCellSelected = prevCellSelected.map((rowArray, rowIndex) =>
-          rowArray.map(
-            (isSelected, colIndex) => rowIndex === row && colIndex === col
-          )
-        );
-        return updatedCellSelected;
-      });
-      setInputMode(true);
+    if (inputMode && selectedNumber !== null) {
+      try {
+        const updatedGrid = [...grid];
+        updatedGrid[row][col] = selectedNumber;
+        setGrid(updatedGrid);
+        setInputMode(false);
+        setSelectedNumber(null);
+        setCellSelected((prevCellSelected) => {
+          const updatedCellSelected = prevCellSelected.map((rowArray) =>
+            rowArray.map(() => false) // Deselect all cells
+          );
+          return updatedCellSelected;
+        });
+        checkWinningCondition(updatedGrid);
+      } catch (error) {
+        console.error("Error handling input submit:", error);
+      }
     }
+  };
+
+ // Update the background color logic for cells
+ const getCellBackgroundColor = (row: number, col: number) => {
+    if (inputMode) {
+      if (selectedNumber === null) {
+        return "transparent"; // No selected number, transparent background
+      } else if (grid[row][col] === null) {
+        return colors.selectedCellBackground; // Empty cell with a selected number, use selectedCellBackground
+      }
+    }
+    return "transparent"; // Default transparent background
   };
 
   const handleNumberButtonClick = (number: number) => {
@@ -223,12 +241,10 @@ const SudokuBoard = () => {
                 style={[
                   styles.cell,
                   {
-                    backgroundColor:
-                      cellSelected[rowIndex][colIndex] &&
-                      inputMode &&
-                      grid[rowIndex][colIndex] === null
-                        ? colors.selectedCellBackground
-                        : "transparent",
+                    backgroundColor: getCellBackgroundColor(
+                      rowIndex,
+                      colIndex
+                    ),
                   },
                 ]}
                 onPress={() => handleCellClick(rowIndex, colIndex)}
