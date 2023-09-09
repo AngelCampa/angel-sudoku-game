@@ -118,12 +118,10 @@ const checkCorrectness = (grid: SudokuGrid) => {
   }
 };
 
+// ...
+
 const SudokuBoard = () => {
   const [grid, setGrid] = useState<SudokuGrid>(generateSudoku());
-  const [selectedCell, setSelectedCell] = useState<{
-    row: number;
-    col: number;
-  } | null>(null);
   const [inputMode, setInputMode] = useState<boolean>(false);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const [cellSelected, setCellSelected] = useState<boolean[][]>(
@@ -131,27 +129,8 @@ const SudokuBoard = () => {
   );
 
   const handleCellClick = (row: number, col: number) => {
-    // In input mode, set the selected square to the selected number
-    if (inputMode && selectedNumber !== null) {
-      try {
-        const updatedGrid = [...grid];
-        updatedGrid[row][col] = selectedNumber;
-        setGrid(updatedGrid);
-        setSelectedCell(null);
-        setInputMode(false);
-        setSelectedNumber(null);
-        setCellSelected((prevCellSelected) => {
-          const updatedCellSelected = [...prevCellSelected];
-          updatedCellSelected[row][col] = true;
-          return updatedCellSelected;
-        });
-        checkWinningCondition(updatedGrid);
-      } catch (error) {
-        console.error("Error handling cell click:", error);
-      }
-    } else {
-      // Not in input mode, select the cell
-      setSelectedCell({ row, col });
+    if (!inputMode && grid[row][col] === null) {
+      // If not in input mode and the selected square is empty, enable input mode
       setCellSelected((prevCellSelected) => {
         const updatedCellSelected = prevCellSelected.map((rowArray, rowIndex) =>
           rowArray.map(
@@ -160,6 +139,7 @@ const SudokuBoard = () => {
         );
         return updatedCellSelected;
       });
+      setInputMode(true);
     }
   };
 
@@ -169,16 +149,20 @@ const SudokuBoard = () => {
     setSelectedNumber(number);
   };
 
-  const handleInputSubmit = () => {
+  const handleInputSubmit = (row: number, col: number) => {
     // Handle input submission
-    if (selectedCell && selectedNumber !== null) {
+    if (inputMode && selectedNumber !== null) {
       try {
         const updatedGrid = [...grid];
-        updatedGrid[selectedCell.row][selectedCell.col] = selectedNumber;
+        updatedGrid[row][col] = selectedNumber;
         setGrid(updatedGrid);
         setInputMode(false);
         setSelectedNumber(null);
-        setSelectedCell(null);
+        setCellSelected((prevCellSelected) => {
+          const updatedCellSelected = [...prevCellSelected];
+          updatedCellSelected[row][col] = true;
+          return updatedCellSelected;
+        });
         checkWinningCondition(updatedGrid);
       } catch (error) {
         console.error("Error handling input submit:", error);
@@ -201,9 +185,9 @@ const SudokuBoard = () => {
     setGrid(generateSudoku());
   }, []);
 
-// ...
+  // ...
 
-return (
+  return (
     <View style={styles.container}>
       <View style={styles.boardContainer}>
         {grid.map((rowData, rowIndex) => (
@@ -213,16 +197,9 @@ return (
                 key={`cell-${rowIndex}-${colIndex}`}
                 style={[
                   styles.cell,
-                  selectedCell &&
-                    selectedCell.row === rowIndex &&
-                    selectedCell.col === colIndex &&
-                    !inputMode && // Change this condition to check if not in input mode
-                    styles.selectedCell,
                   {
                     backgroundColor:
-                      selectedCell &&
-                      (selectedCell.row === rowIndex ||
-                        selectedCell.col === colIndex) &&
+                      cellSelected[rowIndex][colIndex] &&
                       inputMode &&
                       grid[rowIndex][colIndex] === null
                         ? colors.selectedCellBackground
@@ -236,35 +213,6 @@ return (
             ))}
           </View>
         ))}
-        <Modal
-          visible={selectedCell !== null && inputMode}
-          transparent={true}
-          animationType="slide"
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <TextInput
-                style={styles.input}
-                value={selectedNumber !== null ? String(selectedNumber) : ""}
-                onChangeText={(text) => {
-                  if (/^[1-9]$/.test(text)) {
-                    setSelectedNumber(parseInt(text, 10));
-                  } else {
-                    setSelectedNumber(null);
-                  }
-                }}
-                keyboardType="numeric"
-                placeholder="Enter a number"
-              />
-              <TouchableOpacity
-                style={styles.submitButton}
-                onPress={handleInputSubmit}
-              >
-                <Text style={styles.submitButtonText}>Submit</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
       </View>
       <View style={styles.numberButtonContainer}>
         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
@@ -274,8 +222,9 @@ return (
               styles.numberButton,
               {
                 opacity:
-                  selectedCell &&
-                  cellSelected[selectedCell.row][selectedCell.col]
+                  inputMode &&
+                  selectedNumber !== null &&
+                  cellSelected[rowIndex][colIndex] // Use cellSelected here
                     ? 0.5
                     : 1,
               },
@@ -287,8 +236,10 @@ return (
         ))}
       </View>
     </View>
-  );  
+  );
 };
+
+// ...
 
 const colors = {
   primaryBackground: "#E5E5E5", // Light gray background
