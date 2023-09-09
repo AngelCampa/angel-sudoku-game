@@ -118,10 +118,8 @@ const checkCorrectness = (grid: SudokuGrid) => {
   }
 };
 
-const initialGrid: SudokuGrid = generateSudoku(); // Define initialGrid outside the component function
-
 const SudokuBoard = () => {
-  const [grid, setGrid] = useState<SudokuGrid>(initialGrid);
+  const [grid, setGrid] = useState<SudokuGrid>(generateSudoku());
   const [selectedCell, setSelectedCell] = useState<{
     row: number;
     col: number;
@@ -132,49 +130,43 @@ const SudokuBoard = () => {
     Array.from({ length: 9 }, () => Array(9).fill(false))
   );
 
-  const cellBackgroundColor = ({ row, col }: { row: number; col: number }) =>
-  selectedCell &&
-  (selectedCell.row === row || selectedCell.col === col) &&
-  inputMode &&
-  grid[row][col] === null
-      ? colors.selectedCellBackground // Apply the highlight color conditionally
-      : "transparent"; // Default background color
-
   const handleCellClick = (row: number, col: number) => {
-    if (inputMode) {
-      // In input mode, set the selected square to the selected number
-      if (selectedCell && selectedNumber !== null) {
-        try {
-          const updatedGrid = [...grid];
-          updatedGrid[selectedCell.row][selectedCell.col] = selectedNumber;
-          setGrid(updatedGrid);
-          setSelectedCell(null);
-          setInputMode(false);
-          setSelectedNumber(null); // Deselect the number
-          checkWinningCondition(updatedGrid);
-          setCellSelected((prevCellSelected) => {
-            const updatedCellSelected = [...prevCellSelected];
-            updatedCellSelected[row][col] = true;
-            return updatedCellSelected;
-          });
-        } catch (error) {
-          console.error("Error handling cell click:", error);
-        }
+    // In input mode, set the selected square to the selected number
+    if (inputMode && selectedNumber !== null) {
+      try {
+        const updatedGrid = [...grid];
+        updatedGrid[row][col] = selectedNumber;
+        setGrid(updatedGrid);
+        setSelectedCell(null);
+        setInputMode(false);
+        setSelectedNumber(null);
+        setCellSelected((prevCellSelected) => {
+          const updatedCellSelected = [...prevCellSelected];
+          updatedCellSelected[row][col] = true;
+          return updatedCellSelected;
+        });
+        checkWinningCondition(updatedGrid);
+      } catch (error) {
+        console.error("Error handling cell click:", error);
       }
     } else {
       // Not in input mode, select the cell
       setSelectedCell({ row, col });
+      setCellSelected((prevCellSelected) => {
+        const updatedCellSelected = prevCellSelected.map((rowArray, rowIndex) =>
+          rowArray.map(
+            (isSelected, colIndex) => rowIndex === row && colIndex === col
+          )
+        );
+        return updatedCellSelected;
+      });
     }
   };
-
-  const cellOpacity = ({ row, col }: { row: number; col: number }) =>
-    cellSelected[row][col] ? 0.5 : 1;
 
   const handleNumberButtonClick = (number: number) => {
     // Enable input mode and set the selected number
     setInputMode(true);
     setSelectedNumber(number);
-    setSelectedCell(null); // Deselect the cell
   };
 
   const handleInputSubmit = () => {
@@ -185,8 +177,8 @@ const SudokuBoard = () => {
         updatedGrid[selectedCell.row][selectedCell.col] = selectedNumber;
         setGrid(updatedGrid);
         setInputMode(false);
-        setSelectedNumber(null); // Deselect the number
-        setSelectedCell(null); // Deselect the cell
+        setSelectedNumber(null);
+        setSelectedCell(null);
         checkWinningCondition(updatedGrid);
       } catch (error) {
         console.error("Error handling input submit:", error);
@@ -222,9 +214,14 @@ const SudokuBoard = () => {
                   selectedCell &&
                     selectedCell.row === rowIndex &&
                     selectedCell.col === colIndex &&
-                    inputMode &&
+                    !inputMode && // Change this condition to check if not in input mode
                     styles.selectedCell,
-                  styles.cellBackgroundColor({ row: rowIndex, col: colIndex }),
+                  {
+                    backgroundColor: cellBackgroundColor({
+                      row: rowIndex,
+                      col: colIndex,
+                    }),
+                  },
                 ]}
                 onPress={() => handleCellClick(rowIndex, colIndex)}
               >
@@ -271,7 +268,8 @@ const SudokuBoard = () => {
               styles.numberButton,
               {
                 opacity:
-                  selectedCell && cellSelected[selectedCell.row][selectedCell.col]
+                  selectedCell &&
+                  cellSelected[selectedCell.row][selectedCell.col]
                     ? 0.5
                     : 1,
               },
@@ -345,7 +343,6 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: cellBackgroundColor,
   },
   selectedCell: {
     backgroundColor: colors.selectedCellBackground,
@@ -383,15 +380,6 @@ const styles = StyleSheet.create({
   },
   submitButtonText: {
     color: colors.submitButtonText,
-  },
-  cellBackgroundColor: {
-    backgroundColor: ({ row, col }) =>
-      selectedCell &&
-      (selectedCell.row === row || selectedCell.col === col) &&
-      inputMode &&
-      grid[row][col] === null
-        ? colors.selectedCellBackground // Apply the highlight color conditionally
-        : "transparent", // Default background color
   },
 });
 
