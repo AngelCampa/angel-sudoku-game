@@ -166,26 +166,31 @@ const SudokuBoard = () => {
   const handleCellClick = (row: number, col: number) => {
     if (inputMode && selectedNumber !== null) {
       try {
-        const updatedGrid = [...grid];
-        updatedGrid[row][col] = selectedNumber;
-        setGrid(updatedGrid);
-        setInputMode(false);
-        setSelectedNumber(null);
-        setCellSelected((prevCellSelected) => {
-          const updatedCellSelected = prevCellSelected.map(
-            (rowArray) => rowArray.map(() => false) // Deselect all cells
+        if (isPlacementValid(grid, row, col, selectedNumber)) {
+          const updatedGrid = [...grid];
+          updatedGrid[row][col] = selectedNumber;
+          setGrid(updatedGrid);
+          setInputMode(false);
+          setSelectedNumber(null);
+          setCellSelected((prevCellSelected) => {
+            const updatedCellSelected = prevCellSelected.map(
+              (rowArray) => rowArray.map(() => false) // Deselect all cells
+            );
+            return updatedCellSelected;
+          });
+          checkWinningCondition(updatedGrid);
+        } else {
+          // Placement is invalid, show an error message
+          Alert.alert(
+            "Invalid Placement",
+            "The selected number violates Sudoku rules."
           );
-          return updatedCellSelected;
-        });
-        checkWinningCondition(updatedGrid);
+        }
       } catch (error) {
         console.error("Error handling input submit:", error);
       }
-    } else {
-      // Add logic to call handleInputSubmit when a cell is clicked in input mode
-      handleInputSubmit(row, col);
     }
-  };
+  };  
 
   // Update the background color logic for cells
   const getCellBackgroundColor = (row: number, col: number) => {
@@ -205,26 +210,20 @@ const SudokuBoard = () => {
 
   const isPlacementValid = (
     grid: SudokuGrid,
-    solvedGrid: SudokuGrid,
     row: number,
     col: number,
     number: number
   ): boolean => {
-    // Check if the cell in the original solved grid contains the same number
-    if (solvedGrid[row][col] === number) {
-      return true;
-    }
-
     // Check the row for duplicates
     if (grid[row].includes(number)) {
       return false;
     }
-
+  
     // Check the column for duplicates
     if (grid.some((rowData) => rowData[col] === number)) {
       return false;
     }
-
+  
     // Check the 3x3 box for duplicates
     const boxStartRow = Math.floor(row / 3) * 3;
     const boxStartCol = Math.floor(col / 3) * 3;
@@ -235,9 +234,9 @@ const SudokuBoard = () => {
         }
       }
     }
-
+  
     return true;
-  };
+  };  
 
   const handleInputSubmit = (row: number, col: number) => {
     // Handle input submission
@@ -272,14 +271,18 @@ const SudokuBoard = () => {
 
   const checkWinningCondition = (currentGrid: SudokuGrid) => {
     try {
-      const isCorrect = checkCorrectness(currentGrid);
-      if (isCorrect) {
-        Alert.alert("Congratulations!", "You solved the puzzle!");
+      // Check if the puzzle is fully filled
+      const isFilled = currentGrid.every((row) => row.every((cell) => cell !== null));
+      if (isFilled) {
+        const isCorrect = checkCorrectness(currentGrid);
+        if (isCorrect) {
+          Alert.alert("Congratulations!", "You solved the puzzle!");
+        }
       }
     } catch (error) {
       console.error("Error checking winning condition:", error);
     }
-  };
+  };  
 
   // Calculate the opacity for a number button
   const calculateButtonOpacity = (row: number, col: number) => {
