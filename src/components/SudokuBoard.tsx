@@ -215,28 +215,28 @@ const SudokuBoard = () => {
         ))}
       </View>
       <View style={styles.numberButtonContainer}>
-  {grid.map((rowData, rowIndex) => (
-    rowData.map((value, colIndex) => (
-      <TouchableOpacity
-        key={`number-${rowIndex}-${colIndex}`} {/* Use a unique key */}
-        style={[
-          styles.numberButton,
-          {
-            opacity:
-              inputMode &&
-              selectedNumber !== null &&
-              cellSelected[rowIndex][colIndex]
-                ? 0.5
-                : 1,
-          },
-        ]}
-        onPress={() => handleNumberButtonClick(value)}
-      >
-        <Text style={styles.numberButtonText}>{value || ""}</Text>
-      </TouchableOpacity>
-    ))
-  ))}
-</View>
+        {grid.map((rowData, rowIndex) =>
+          rowData.map((value, colIndex) => (
+            <TouchableOpacity
+              key={`number-${rowIndex}-${colIndex}`}
+              style={[
+                styles.numberButton,
+                {
+                  opacity:
+                    inputMode &&
+                    selectedNumber !== null &&
+                    cellSelected[rowIndex][colIndex]
+                      ? 0.5
+                      : 1,
+                },
+              ]}
+              onPress={() => handleNumberButtonClick(value)}
+            >
+              <Text style={styles.numberButtonText}>{value || ""}</Text>
+            </TouchableOpacity>
+          ))
+        )}
+      </View>
     </View>
   );
 };
@@ -281,7 +281,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: 5,
     borderRadius: 5,
-    opacity: ({ row, col }) => (cellSelected[row][col] ? 0.5 : 1), // Apply opacity based on cellSelected state
+    opacity: ({ row, col }) =>
+      cellSelected[row][col] && inputMode && selectedNumber !== null ? 0.5 : 1,
   },
   numberButtonText: {
     fontSize: 20,
