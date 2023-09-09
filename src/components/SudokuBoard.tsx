@@ -163,21 +163,51 @@ const SudokuBoard = () => {
     setSelectedNumber(number);
   };
 
+  const isPlacementValid = (grid: SudokuGrid, row: number, col: number, number: number): boolean => {
+    // Check the row for duplicates
+    if (grid[row].includes(number)) {
+      return false;
+    }
+  
+    // Check the column for duplicates
+    if (grid.some(rowData => rowData[col] === number)) {
+      return false;
+    }
+  
+    // Check the 3x3 box for duplicates
+    const boxStartRow = Math.floor(row / 3) * 3;
+    const boxStartCol = Math.floor(col / 3) * 3;
+    for (let i = boxStartRow; i < boxStartRow + 3; i++) {
+      for (let j = boxStartCol; j < boxStartCol + 3; j++) {
+        if (grid[i][j] === number) {
+          return false;
+        }
+      }
+    }
+  
+    return true;
+  };  
+  
   const handleInputSubmit = (row: number, col: number) => {
     // Handle input submission
     if (inputMode && selectedNumber !== null) {
       try {
-        const updatedGrid = [...grid];
-        updatedGrid[row][col] = selectedNumber;
-        setGrid(updatedGrid);
-        setInputMode(false);
-        setSelectedNumber(null);
-        setCellSelected((prevCellSelected) => {
-          const updatedCellSelected = [...prevCellSelected];
-          updatedCellSelected[row][col] = true;
-          return updatedCellSelected;
-        });
-        checkWinningCondition(updatedGrid);
+        if (isPlacementValid(grid, row, col, selectedNumber)) {
+          const updatedGrid = [...grid];
+          updatedGrid[row][col] = selectedNumber;
+          setGrid(updatedGrid);
+          setInputMode(false);
+          setSelectedNumber(null);
+          setCellSelected((prevCellSelected) => {
+            const updatedCellSelected = [...prevCellSelected];
+            updatedCellSelected[row][col] = true;
+            return updatedCellSelected;
+          });
+          checkWinningCondition(updatedGrid);
+        } else {
+          // Placement is invalid, show an error message
+          Alert.alert("Invalid Placement", "The selected number violates Sudoku rules.");
+        }
       } catch (error) {
         console.error("Error handling input submit:", error);
       }
