@@ -10,30 +10,67 @@ import {
 } from "react-native";
 
 // Define the Sudoku grid data type
-type SudokuGrid = (number | null)[][];
+export type SudokuGrid = (number | null)[][];
 
 // Helper function to shuffle an array
-const shuffleArray = (arr: number[]) => {
+export const shuffleArray = (arr: number[]) => {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
 };
 
-// Helper function to generate a solved Sudoku grid
-const generateSolvedSudoku = () => {
+// Helper function to generate a solved Sudoku grid using backtracking
+export const generateSolvedSudoku = () => {
   const grid: SudokuGrid = Array.from({ length: 9 }, () => Array(9).fill(null));
-  const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-  for (let i = 0; i < 9; i++) {
-    shuffleArray(numbers);
-    for (let j = 0; j < 9; j++) {
-      const num = numbers[j];
-      grid[i][j] = num;
+  const isValidPlacement = (row: number, col: number, num: number) => {
+    // Check row and column
+    for (let i = 0; i < 9; i++) {
+      if (grid[row][i] === num || grid[i][col] === num) {
+        return false;
+      }
     }
-  }
 
-  return grid;
+    // Check 3x3 box
+    const startRow = Math.floor(row / 3) * 3;
+    const startCol = Math.floor(col / 3) * 3;
+    for (let i = startRow; i < startRow + 3; i++) {
+      for (let j = startCol; j < startCol + 3; j++) {
+        if (grid[i][j] === num) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  };
+
+  const solve = () => {
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (grid[row][col] === null) {
+          for (let num = 1; num <= 9; num++) {
+            if (isValidPlacement(row, col, num)) {
+              grid[row][col] = num;
+              if (solve()) {
+                return true;
+              }
+              grid[row][col] = null;
+            }
+          }
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  if (solve()) {
+    return grid;
+  } else {
+    throw new Error("Failed to generate a valid Sudoku solution.");
+  }
 };
 
 const generateSudoku = () => {
@@ -135,8 +172,8 @@ const SudokuBoard = () => {
         setInputMode(false);
         setSelectedNumber(null);
         setCellSelected((prevCellSelected) => {
-          const updatedCellSelected = prevCellSelected.map((rowArray) =>
-            rowArray.map(() => false) // Deselect all cells
+          const updatedCellSelected = prevCellSelected.map(
+            (rowArray) => rowArray.map(() => false) // Deselect all cells
           );
           return updatedCellSelected;
         });
@@ -147,8 +184,8 @@ const SudokuBoard = () => {
     }
   };
 
- // Update the background color logic for cells
- const getCellBackgroundColor = (row: number, col: number) => {
+  // Update the background color logic for cells
+  const getCellBackgroundColor = (row: number, col: number) => {
     if (inputMode && selectedNumber !== null) {
       if (cellSelected[row][col] && grid[row][col] === selectedNumber) {
         return colors.selectedCellBackground; // Cell is selected and contains the selected number
@@ -163,17 +200,28 @@ const SudokuBoard = () => {
     setSelectedNumber(number);
   };
 
-  const isPlacementValid = (grid: SudokuGrid, row: number, col: number, number: number): boolean => {
+  const isPlacementValid = (
+    grid: SudokuGrid,
+    solvedGrid: SudokuGrid,
+    row: number,
+    col: number,
+    number: number
+  ): boolean => {
+    // Check if the cell in the original solved grid contains the same number
+    if (solvedGrid[row][col] === number) {
+      return true;
+    }
+
     // Check the row for duplicates
     if (grid[row].includes(number)) {
       return false;
     }
-  
+
     // Check the column for duplicates
-    if (grid.some(rowData => rowData[col] === number)) {
+    if (grid.some((rowData) => rowData[col] === number)) {
       return false;
     }
-  
+
     // Check the 3x3 box for duplicates
     const boxStartRow = Math.floor(row / 3) * 3;
     const boxStartCol = Math.floor(col / 3) * 3;
@@ -184,29 +232,22 @@ const SudokuBoard = () => {
         }
       }
     }
-  
+
     return true;
-  };  
-  
+  };
+
   const handleInputSubmit = (row: number, col: number) => {
     // Handle input submission
     if (inputMode && selectedNumber !== null) {
       try {
-        if (isPlacementValid(grid, row, col, selectedNumber)) {
-          const updatedGrid = [...grid];
-          updatedGrid[row][col] = selectedNumber;
-          setGrid(updatedGrid);
-          setInputMode(false);
-          setSelectedNumber(null);
-          setCellSelected((prevCellSelected) => {
-            const updatedCellSelected = [...prevCellSelected];
-            updatedCellSelected[row][col] = true;
-            return updatedCellSelected;
-          });
-          checkWinningCondition(updatedGrid);
+        if (isPlacementValid(grid, solvedGrid, row, col, selectedNumber)) {
+          // Rest of the code remains the same...
         } else {
           // Placement is invalid, show an error message
-          Alert.alert("Invalid Placement", "The selected number violates Sudoku rules.");
+          Alert.alert(
+            "Invalid Placement",
+            "The selected number violates Sudoku rules."
+          );
         }
       } catch (error) {
         console.error("Error handling input submit:", error);
@@ -269,10 +310,7 @@ const SudokuBoard = () => {
                 style={[
                   styles.cell,
                   {
-                    backgroundColor: getCellBackgroundColor(
-                      rowIndex,
-                      colIndex
-                    ),
+                    backgroundColor: getCellBackgroundColor(rowIndex, colIndex),
                   },
                 ]}
                 onPress={() => handleCellClick(rowIndex, colIndex)}
