@@ -215,26 +215,28 @@ const SudokuBoard = () => {
         ))}
       </View>
       <View style={styles.numberButtonContainer}>
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
-          <TouchableOpacity
-            key={`number-${number}`}
-            style={[
-              styles.numberButton,
-              {
-                opacity:
-                  inputMode &&
-                  selectedNumber !== null &&
-                  cellSelected[rowIndex][colIndex] // Use cellSelected here
-                    ? 0.5
-                    : 1,
-              },
-            ]}
-            onPress={() => handleNumberButtonClick(number)}
-          >
-            <Text style={styles.numberButtonText}>{number}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+  {grid.map((rowData, rowIndex) => (
+    rowData.map((value, colIndex) => (
+      <TouchableOpacity
+        key={`number-${rowIndex}-${colIndex}`} {/* Use a unique key */}
+        style={[
+          styles.numberButton,
+          {
+            opacity:
+              inputMode &&
+              selectedNumber !== null &&
+              cellSelected[rowIndex][colIndex]
+                ? 0.5
+                : 1,
+          },
+        ]}
+        onPress={() => handleNumberButtonClick(value)}
+      >
+        <Text style={styles.numberButtonText}>{value || ""}</Text>
+      </TouchableOpacity>
+    ))
+  ))}
+</View>
     </View>
   );
 };
