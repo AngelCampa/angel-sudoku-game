@@ -16,3 +16,4 @@ yarn start
 3. Add storage (Capability to save unfinished games)
 4. Eliminate all unused dependencies from package.json
 5. Add a reload button to "Play again"
+6. Add a cheat "Solve Puzzle" functionality
