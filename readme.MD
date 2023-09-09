@@ -15,3 +15,4 @@ yarn start
 2. Separate the 9 smaller grids with thicker lines
 3. Add storage (Capability to save unfinished games)
 4. Eliminate all unused dependencies from package.json
+5. Add a reload button to "Play again"
