@@ -201,7 +201,9 @@ const SudokuBoard = () => {
     setGrid(generateSudoku());
   }, []);
 
-  return (
+// ...
+
+return (
     <View style={styles.container}>
       <View style={styles.boardContainer}>
         {grid.map((rowData, rowIndex) => (
@@ -217,10 +219,14 @@ const SudokuBoard = () => {
                     !inputMode && // Change this condition to check if not in input mode
                     styles.selectedCell,
                   {
-                    backgroundColor: cellBackgroundColor({
-                      row: rowIndex,
-                      col: colIndex,
-                    }),
+                    backgroundColor:
+                      selectedCell &&
+                      (selectedCell.row === rowIndex ||
+                        selectedCell.col === colIndex) &&
+                      inputMode &&
+                      grid[rowIndex][colIndex] === null
+                        ? colors.selectedCellBackground
+                        : "transparent",
                   },
                 ]}
                 onPress={() => handleCellClick(rowIndex, colIndex)}
@@ -281,7 +287,7 @@ const SudokuBoard = () => {
         ))}
       </View>
     </View>
-  );
+  );  
 };
 
 const colors = {
