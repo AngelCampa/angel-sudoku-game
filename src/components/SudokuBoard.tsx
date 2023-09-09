@@ -149,11 +149,9 @@ const SudokuBoard = () => {
 
  // Update the background color logic for cells
  const getCellBackgroundColor = (row: number, col: number) => {
-    if (inputMode) {
-      if (selectedNumber === null) {
-        return "transparent"; // No selected number, transparent background
-      } else if (grid[row][col] === null) {
-        return colors.selectedCellBackground; // Empty cell with a selected number, use selectedCellBackground
+    if (inputMode && selectedNumber !== null) {
+      if (cellSelected[row][col] && grid[row][col] === selectedNumber) {
+        return colors.selectedCellBackground; // Cell is selected and contains the selected number
       }
     }
     return "transparent"; // Default transparent background
