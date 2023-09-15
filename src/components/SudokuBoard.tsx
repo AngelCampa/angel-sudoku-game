@@ -8,6 +8,7 @@ import {
   Modal,
   TextInput,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Define the Sudoku grid data type
 export type SudokuGrid = (number | null)[][];
@@ -190,7 +191,7 @@ const SudokuBoard = () => {
         console.error("Error handling input submit:", error);
       }
     }
-  };  
+  };
 
   // Update the background color logic for cells
   const getCellBackgroundColor = (row: number, col: number) => {
@@ -218,12 +219,12 @@ const SudokuBoard = () => {
     if (grid[row].includes(number)) {
       return false;
     }
-  
+
     // Check the column for duplicates
     if (grid.some((rowData) => rowData[col] === number)) {
       return false;
     }
-  
+
     // Check the 3x3 box for duplicates
     const boxStartRow = Math.floor(row / 3) * 3;
     const boxStartCol = Math.floor(col / 3) * 3;
@@ -234,16 +235,24 @@ const SudokuBoard = () => {
         }
       }
     }
-  
+
     return true;
-  };  
+  };
 
   const handleInputSubmit = (row: number, col: number) => {
     // Handle input submission
     if (inputMode && selectedNumber !== null) {
       try {
         // Check if the placement is valid
-        if (isPlacementValid(grid, generateSolvedSudoku(), row, col, selectedNumber)) {
+        if (
+          isPlacementValid(
+            grid,
+            generateSolvedSudoku(),
+            row,
+            col,
+            selectedNumber
+          )
+        ) {
           const updatedGrid = [...grid];
           updatedGrid[row][col] = selectedNumber;
           setGrid(updatedGrid);
@@ -267,12 +276,14 @@ const SudokuBoard = () => {
         console.error("Error handling input submit:", error);
       }
     }
-  };  
+  };
 
   const checkWinningCondition = (currentGrid: SudokuGrid) => {
     try {
       // Check if the puzzle is fully filled
-      const isFilled = currentGrid.every((row) => row.every((cell) => cell !== null));
+      const isFilled = currentGrid.every((row) =>
+        row.every((cell) => cell !== null)
+      );
       if (isFilled) {
         const isCorrect = checkCorrectness(currentGrid);
         if (isCorrect) {
@@ -282,7 +293,33 @@ const SudokuBoard = () => {
     } catch (error) {
       console.error("Error checking winning condition:", error);
     }
-  };  
+  };
+
+  const handleRestart = () => {
+    Alert.alert(
+      "Restart Sudoku",
+      "Are you sure you want to restart? You will lose your progress.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Restart",
+          onPress: () => {
+            // Logic to reset the Sudoku grid to a new puzzle
+            const newGrid = generateSudoku();
+            setGrid(newGrid);
+            setInputMode(false);
+            setSelectedNumber(null);
+            setCellSelected(
+              Array.from({ length: 9 }, () => Array(9).fill(false))
+            );
+          },
+        },
+      ]
+    );
+  };
 
   // Create the number buttons
   const numberButtons = [];
@@ -332,6 +369,10 @@ const SudokuBoard = () => {
         ))}
       </View>
       <View style={styles.numberButtonContainer}>{numberButtons}</View>
+      {/* Restart button */}
+      <TouchableOpacity onPress={handleRestart}>
+        <Text style={styles.restartButton}>Restart</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -434,6 +475,11 @@ const styles = StyleSheet.create({
   },
   submitButtonText: {
     color: colors.submitButtonText,
+  },
+  restartButton: {
+    marginTop: 20,
+    fontSize: 18,
+    color: "blue", // Change color as per your design
   },
 });
 
