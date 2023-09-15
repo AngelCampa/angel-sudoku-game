@@ -530,10 +530,15 @@ const styles = StyleSheet.create({
     color: colors.submitButtonText,
   },
   restartButton: {
-    marginTop: 20,
+    marginTop: 80,
     fontSize: 18,
-    color: "blue", // Change color as per your design
-  },
+    backgroundColor: colors.numberButtonBackground,
+    padding: 10,
+    borderRadius: 10, // Adjust the border radius as needed
+    color: colors.numberButtonText,
+    textAlign: "center",
+    fontWeight: "bold",
+  },  
 });
 
 export default SudokuBoard;
