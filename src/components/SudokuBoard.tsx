@@ -180,6 +180,7 @@ const SudokuBoard = () => {
             return updatedCellSelected;
           });
           checkWinningCondition(updatedGrid);
+          saveGameState(grid);
         } else {
           // Placement is invalid, show an error message
           Alert.alert(
@@ -297,29 +298,53 @@ const SudokuBoard = () => {
 
   const handleRestart = () => {
     Alert.alert(
-      "Restart Sudoku",
-      "Are you sure you want to restart? You will lose your progress.",
+      'Restart Sudoku',
+      'Are you sure you want to restart? You will lose your progress.',
       [
         {
-          text: "Cancel",
-          style: "cancel",
+          text: 'Cancel',
+          style: 'cancel',
         },
         {
-          text: "Restart",
-          onPress: () => {
+          text: 'Restart',
+          onPress: async () => {
             // Logic to reset the Sudoku grid to a new puzzle
             const newGrid = generateSudoku();
             setGrid(newGrid);
             setInputMode(false);
             setSelectedNumber(null);
-            setCellSelected(
-              Array.from({ length: 9 }, () => Array(9).fill(false))
-            );
+            setCellSelected(Array.from({ length: 9 }, () => Array(9).fill(false)));
+  
+            // Clear the saved game state
+            await AsyncStorage.removeItem('sudokuGameState');
           },
         },
       ]
     );
   };
+  
+// Save the game state to local storage
+const saveGameState = async (gameState: SudokuGrid) => {
+  try {
+    const jsonGameState = JSON.stringify(gameState);
+    await AsyncStorage.setItem('sudokuGameState', jsonGameState);
+  } catch (error) {
+    console.error('Error saving game state:', error);
+  }
+};
+
+// Load the game state from local storage
+const loadGameState = async () => {
+  try {
+    const jsonGameState = await AsyncStorage.getItem('sudokuGameState');
+    if (jsonGameState) {
+      const gameState = JSON.parse(jsonGameState);
+      setGrid(gameState);
+    }
+  } catch (error) {
+    console.error('Error loading game state:', error);
+  }
+};
 
   // Create the number buttons
   const numberButtons = [];
@@ -341,8 +366,8 @@ const SudokuBoard = () => {
   }
 
   useEffect(() => {
-    setGrid(generateSudoku());
-  }, []);
+    loadGameState();
+  }, []);  
 
   // ...
 
