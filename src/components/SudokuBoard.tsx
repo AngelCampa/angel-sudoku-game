@@ -9,6 +9,7 @@ import {
   TextInput,
 } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { RouteProp } from "@react-navigation/native";
 
 // Define the Sudoku grid data type
 export type SudokuGrid = (number | null)[][];
@@ -74,7 +75,7 @@ export const generateSolvedSudoku = () => {
   }
 };
 
-const generateSudoku = () => {
+const generateSudoku = (difficulty: 'easy' | 'medium' | 'hard') => {
   try {
     // Implement Sudoku puzzle generation logic here
     // Start with a solved Sudoku grid and remove numbers
@@ -84,7 +85,12 @@ const generateSudoku = () => {
     // Remove some numbers to increase difficulty
     // For example, in a "medium" puzzle, you can remove about 50% of the numbers
     // Adjust the removal rate as needed
-    const removalRate = 0.5;
+    const removalRates = {
+      easy: 0.3,   // 30% of numbers removed
+      medium: 0.5, // 50% of numbers removed
+      hard: 0.7    // 70% of numbers removed
+    };
+    const removalRate = removalRates[difficulty];
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
         if (Math.random() < removalRate) {
@@ -156,8 +162,13 @@ const checkCorrectness = (grid: SudokuGrid) => {
   }
 };
 
-const SudokuBoard = () => {
-  const [grid, setGrid] = useState<SudokuGrid>(generateSudoku());
+type SudokuBoardProps = {
+  route: RouteProp<{ params: { difficulty: 'easy' | 'medium' | 'hard' } }>; // Define the route type
+};
+
+const SudokuBoard = ({ route }: SudokuBoardProps) => {
+  const { difficulty } = route.params; // Extract the difficulty from route.params
+  const [grid, setGrid] = useState<SudokuGrid>(generateSudoku(difficulty));
   const [inputMode, setInputMode] = useState<boolean>(false);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const [cellSelected, setCellSelected] = useState<boolean[][]>(
@@ -309,7 +320,7 @@ const SudokuBoard = () => {
           text: 'Restart',
           onPress: async () => {
             // Logic to reset the Sudoku grid to a new puzzle
-            const newGrid = generateSudoku();
+            const newGrid = generateSudoku(difficulty); // Pass the difficulty
             setGrid(newGrid);
             setInputMode(false);
             setSelectedNumber(null);
@@ -321,7 +332,7 @@ const SudokuBoard = () => {
         },
       ]
     );
-  };
+  };  
   
 // Save the game state to local storage
 const saveGameState = async (gameState: SudokuGrid) => {

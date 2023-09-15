@@ -1,13 +1,8 @@
 import React from 'react';
-import { View } from 'react-native';
-import SudokuBoard from './src/components/SudokuBoard';
+import Navigation from './src/navigation/Navigation';
 
 const App = () => {
-  return (
-    <View>
-      <SudokuBoard />
-    </View>
-  );
+  return <Navigation />;
 };
 
 export default App;
