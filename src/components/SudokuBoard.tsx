@@ -387,20 +387,27 @@ const loadGameState = async () => {
       <View style={styles.boardContainer}>
         {grid.map((rowData, rowIndex) => (
           <View key={`row-${rowIndex}`} style={styles.row}>
-            {rowData.map((value, colIndex) => (
-              <TouchableOpacity
-                key={`cell-${rowIndex}-${colIndex}`}
-                style={[
-                  styles.cell,
-                  {
-                    backgroundColor: getCellBackgroundColor(rowIndex, colIndex),
-                  },
-                ]}
-                onPress={() => handleCellClick(rowIndex, colIndex)} // Call handleCellClick
-              >
-                <Text style={styles.cellText}>{value || ""}</Text>
-              </TouchableOpacity>
-            ))}
+            {rowData.map((value, colIndex) => {
+              const isThickTopBorder = rowIndex % 3 === 0;
+              const isThickLeftBorder = colIndex % 3 === 0;
+  
+              return (
+                <TouchableOpacity
+                  key={`cell-${rowIndex}-${colIndex}`}
+                  style={[
+                    styles.cell,
+                    {
+                      backgroundColor: getCellBackgroundColor(rowIndex, colIndex),
+                      borderTopWidth: isThickTopBorder ? 2 : 1,
+                      borderLeftWidth: isThickLeftBorder ? 2 : 1,
+                    },
+                  ]}
+                  onPress={() => handleCellClick(rowIndex, colIndex)}
+                >
+                  <Text style={styles.cellText}>{value || ""}</Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         ))}
       </View>
@@ -411,6 +418,7 @@ const loadGameState = async () => {
       </TouchableOpacity>
     </View>
   );
+  
 };
 
 // ...
@@ -462,6 +470,8 @@ const styles = StyleSheet.create({
   },
   boardContainer: {
     flexDirection: "column",
+    borderWidth: 2,  // Add border width for the outer square
+    borderColor: colors.cellBorder, // Color for the outer square border
   },
   row: {
     flexDirection: "row",
@@ -470,10 +480,17 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderColor: colors.cellBorder,
-    borderBottomWidth: 1,
-    borderRightWidth: 1,
+    borderBottomWidth: 1,  // Return to the original border width
+    borderRightWidth: 1,  // Return to the original border width
     justifyContent: "center",
     alignItems: "center",
+    position: "relative",  // Added to position the squareBorder
+  },  
+  // New style for the 3x3 squares
+  squareBorder: {
+    position: "absolute",
+    borderColor: colors.cellBorder,
+    borderWidth: 2,  // Adjust the border width to make it thicker
   },
   selectedCell: {
     backgroundColor: colors.selectedCellBackground,
