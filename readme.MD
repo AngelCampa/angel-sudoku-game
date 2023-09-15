@@ -22,7 +22,8 @@ yarn start
     Note: I don't think this requires an alert, because that interrumpts the user flow. Think of something less invasive!
 4. Add a rating feature: Prompt the user to rate the app after 10 minutes on it
 5. Add a donation feature: After 20 minutes, prompt the user if they want to donate. Leave the option in the home page or somewhere where it doesn't affect the experience
-6. Publish to both stores! (And Huawei store if possible)
+6. Add app icons
+7. Publish to both stores! (And Huawei store if possible)
 
 ## Future improvements!
 1. Add gamification
