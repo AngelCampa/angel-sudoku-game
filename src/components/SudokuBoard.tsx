@@ -174,6 +174,35 @@ const SudokuBoard = ({ route }: SudokuBoardProps) => {
   const [cellSelected, setCellSelected] = useState<boolean[][]>(
     Array.from({ length: 9 }, () => Array(9).fill(false))
   );
+  const [isModalVisible, setModalVisible] = useState(false); // Add this line
+
+  const handleOpenModal = () => {
+    setModalVisible(true);
+  };
+
+  const handleDismissModal = () => {
+    setModalVisible(false);
+  };
+
+  const HowToPlayModalContent = () => {
+    return (
+      <View style={styles.modalContent}>
+        <Text style={styles.modalText}>How to Play:</Text>
+        <Text style={styles.modalText}>
+          Select one of the numbers below the Sudoku board and then tap the cell
+          where you want to put it.
+        </Text>
+        <Text style={styles.modalText}>General Sudoku Instructions:</Text>
+        <Text style={styles.modalText}>
+          Fill each row, each column, and each of the 3x3 sub-grids with all the
+          numbers from 1 to 9 without repeating any numbers.
+        </Text>
+        <TouchableOpacity onPress={handleDismissModal} style={styles.dismissButton}>
+          <Text style={styles.dismissButton}>Dismiss</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };  
 
   const handleCellClick = (row: number, col: number) => {
     if (inputMode && selectedNumber !== null) {
@@ -416,9 +445,24 @@ const loadGameState = async () => {
       <TouchableOpacity onPress={handleRestart}>
         <Text style={styles.restartButton}>Restart</Text>
       </TouchableOpacity>
+      {/* Button to open the How to Play modal */}
+      <TouchableOpacity onPress={handleOpenModal}>
+        <Text style={styles.howToPlayButton}>How to Play</Text>
+      </TouchableOpacity>
+
+      {/* How to Play Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={handleDismissModal}
+      >
+        <View style={styles.modalContainer}>
+          <HowToPlayModalContent />
+        </View>
+      </Modal>
     </View>
   );
-  
 };
 
 // ...
@@ -437,14 +481,15 @@ const colors = {
   inputBorder: "#999999", // Light gray border for input field
   submitButtonBackground: "#FF6B6B", // Coral background for the submit button
   submitButtonText: "#FFFFFF", // White text for the submit button
+  dismissButtonBackground: "#E1D5E7", // Soft lavender background for Dismiss button
 };
 
 const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 70,
     backgroundColor: colors.primaryBackground,
+    flex: 1,
   },
   numberButtonContainer: {
     flexDirection: "row",
@@ -472,6 +517,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     borderWidth: 2,  // Add border width for the outer square
     borderColor: colors.cellBorder, // Color for the outer square border
+    marginTop: 40,
   },
   row: {
     flexDirection: "row",
@@ -530,7 +576,8 @@ const styles = StyleSheet.create({
     color: colors.submitButtonText,
   },
   restartButton: {
-    marginTop: 80,
+    // marginTop: 170,
+    marginTop: 50,
     fontSize: 18,
     backgroundColor: colors.numberButtonBackground,
     padding: 10,
@@ -539,6 +586,38 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "bold",
   },  
+  // New style for How to Play button
+  howToPlayButton: {
+    marginTop: 10,
+    fontSize: 18,
+    backgroundColor: colors.dismissButtonBackground,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    textAlign: "center",
+    fontWeight: "bold",
+    color: colors.numberButtonText,
+  },
+
+  // New style for modal content text
+  modalText: {
+    fontSize: 18,
+    marginBottom: 20,
+  },
+  // New style for Dismiss button
+  dismissButton: {
+    backgroundColor: colors.dismissButtonBackground,
+    textAlign: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    fontSize: 18,
+    marginTop: 10,  // Adjust the margin as needed
+    color: 'black',
+    fontWeight: "bold",
+    alignItems: "center",
+    position: "relative",  // Added to position the squareBorder
+  },
 });
 
 export default SudokuBoard;
