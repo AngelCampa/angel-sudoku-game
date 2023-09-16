@@ -8,7 +8,7 @@ import {
   Modal,
   TextInput,
 } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RouteProp } from "@react-navigation/native";
 
 // Define the Sudoku grid data type
@@ -75,7 +75,7 @@ export const generateSolvedSudoku = () => {
   }
 };
 
-const generateSudoku = (difficulty: 'easy' | 'medium' | 'hard') => {
+const generateSudoku = (difficulty: "easy" | "medium" | "hard") => {
   try {
     // Implement Sudoku puzzle generation logic here
     // Start with a solved Sudoku grid and remove numbers
@@ -86,9 +86,9 @@ const generateSudoku = (difficulty: 'easy' | 'medium' | 'hard') => {
     // For example, in a "medium" puzzle, you can remove about 50% of the numbers
     // Adjust the removal rate as needed
     const removalRates = {
-      easy: 0.3,   // 30% of numbers removed
+      easy: 0.3, // 30% of numbers removed
       medium: 0.5, // 50% of numbers removed
-      hard: 0.7    // 70% of numbers removed
+      hard: 0.7, // 70% of numbers removed
     };
     const removalRate = removalRates[difficulty];
     for (let i = 0; i < 9; i++) {
@@ -163,7 +163,7 @@ const checkCorrectness = (grid: SudokuGrid) => {
 };
 
 type SudokuBoardProps = {
-  route: RouteProp<{ params: { difficulty: 'easy' | 'medium' | 'hard' } }>; // Define the route type
+  route: RouteProp<{ params: { difficulty: "easy" | "medium" | "hard" } }>; // Define the route type
 };
 
 const SudokuBoard = ({ route }: SudokuBoardProps) => {
@@ -197,12 +197,15 @@ const SudokuBoard = ({ route }: SudokuBoardProps) => {
           Fill each row, each column, and each of the 3x3 sub-grids with all the
           numbers from 1 to 9 without repeating any numbers.
         </Text>
-        <TouchableOpacity onPress={handleDismissModal} style={styles.dismissButton}>
+        <TouchableOpacity
+          onPress={handleDismissModal}
+          style={styles.dismissButton}
+        >
           <Text style={styles.dismissButton}>Dismiss</Text>
         </TouchableOpacity>
       </View>
     );
-  };  
+  };
 
   const handleCellClick = (row: number, col: number) => {
     if (inputMode && selectedNumber !== null) {
@@ -222,17 +225,13 @@ const SudokuBoard = ({ route }: SudokuBoardProps) => {
           checkWinningCondition(updatedGrid);
           saveGameState(grid);
         } else {
-          // Placement is invalid, show an error message
-          Alert.alert(
-            "Invalid Placement",
-            "The selected number violates Sudoku rules."
-          );
-        }
+          console.log("Oops! That's not where it goes");
+        } 
       } catch (error) {
         console.error("Error handling input submit:", error);
       }
     }
-  };
+  };  
 
   // Update the background color logic for cells
   const getCellBackgroundColor = (row: number, col: number) => {
@@ -338,53 +337,55 @@ const SudokuBoard = ({ route }: SudokuBoardProps) => {
 
   const handleRestart = () => {
     Alert.alert(
-      'Restart Sudoku',
-      'Are you sure you want to restart? You will lose your progress.',
+      "Restart Sudoku",
+      "Are you sure you want to restart? You will lose your progress.",
       [
         {
-          text: 'Cancel',
-          style: 'cancel',
+          text: "Cancel",
+          style: "cancel",
         },
         {
-          text: 'Restart',
+          text: "Restart",
           onPress: async () => {
             // Logic to reset the Sudoku grid to a new puzzle
             const newGrid = generateSudoku(difficulty); // Pass the difficulty
             setGrid(newGrid);
             setInputMode(false);
             setSelectedNumber(null);
-            setCellSelected(Array.from({ length: 9 }, () => Array(9).fill(false)));
-  
+            setCellSelected(
+              Array.from({ length: 9 }, () => Array(9).fill(false))
+            );
+
             // Clear the saved game state
-            await AsyncStorage.removeItem('sudokuGameState');
+            await AsyncStorage.removeItem("sudokuGameState");
           },
         },
       ]
     );
-  };  
-  
-// Save the game state to local storage
-const saveGameState = async (gameState: SudokuGrid) => {
-  try {
-    const jsonGameState = JSON.stringify(gameState);
-    await AsyncStorage.setItem('sudokuGameState', jsonGameState);
-  } catch (error) {
-    console.error('Error saving game state:', error);
-  }
-};
+  };
 
-// Load the game state from local storage
-const loadGameState = async () => {
-  try {
-    const jsonGameState = await AsyncStorage.getItem('sudokuGameState');
-    if (jsonGameState) {
-      const gameState = JSON.parse(jsonGameState);
-      setGrid(gameState);
+  // Save the game state to local storage
+  const saveGameState = async (gameState: SudokuGrid) => {
+    try {
+      const jsonGameState = JSON.stringify(gameState);
+      await AsyncStorage.setItem("sudokuGameState", jsonGameState);
+    } catch (error) {
+      console.error("Error saving game state:", error);
     }
-  } catch (error) {
-    console.error('Error loading game state:', error);
-  }
-};
+  };
+
+  // Load the game state from local storage
+  const loadGameState = async () => {
+    try {
+      const jsonGameState = await AsyncStorage.getItem("sudokuGameState");
+      if (jsonGameState) {
+        const gameState = JSON.parse(jsonGameState);
+        setGrid(gameState);
+      }
+    } catch (error) {
+      console.error("Error loading game state:", error);
+    }
+  };
 
   // Create the number buttons
   const numberButtons = [];
@@ -407,7 +408,7 @@ const loadGameState = async () => {
 
   useEffect(() => {
     loadGameState();
-  }, []);  
+  }, []);
 
   // ...
 
@@ -419,21 +420,26 @@ const loadGameState = async () => {
             {rowData.map((value, colIndex) => {
               const isThickTopBorder = rowIndex % 3 === 0;
               const isThickLeftBorder = colIndex % 3 === 0;
-  
+
               return (
                 <TouchableOpacity
                   key={`cell-${rowIndex}-${colIndex}`}
                   style={[
                     styles.cell,
                     {
-                      backgroundColor: getCellBackgroundColor(rowIndex, colIndex),
+                      backgroundColor: getCellBackgroundColor(
+                        rowIndex,
+                        colIndex
+                      ),
                       borderTopWidth: isThickTopBorder ? 2 : 1,
                       borderLeftWidth: isThickLeftBorder ? 2 : 1,
                     },
                   ]}
                   onPress={() => handleCellClick(rowIndex, colIndex)}
                 >
-                  <Text style={styles.cellText}>{value || ""}</Text>
+                  <Text style={styles.cellText}>
+                    {value !== null ? value.toString() : ""}
+                  </Text>
                 </TouchableOpacity>
               );
             })}
@@ -515,7 +521,7 @@ const styles = StyleSheet.create({
   },
   boardContainer: {
     flexDirection: "column",
-    borderWidth: 2,  // Add border width for the outer square
+    borderWidth: 2, // Add border width for the outer square
     borderColor: colors.cellBorder, // Color for the outer square border
     marginTop: 40,
   },
@@ -526,17 +532,17 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderColor: colors.cellBorder,
-    borderBottomWidth: 1,  // Return to the original border width
-    borderRightWidth: 1,  // Return to the original border width
+    borderBottomWidth: 1, // Return to the original border width
+    borderRightWidth: 1, // Return to the original border width
     justifyContent: "center",
     alignItems: "center",
-    position: "relative",  // Added to position the squareBorder
-  },  
+    position: "relative", // Added to position the squareBorder
+  },
   // New style for the 3x3 squares
   squareBorder: {
     position: "absolute",
     borderColor: colors.cellBorder,
-    borderWidth: 2,  // Adjust the border width to make it thicker
+    borderWidth: 2, // Adjust the border width to make it thicker
   },
   selectedCell: {
     backgroundColor: colors.selectedCellBackground,
@@ -585,7 +591,7 @@ const styles = StyleSheet.create({
     color: colors.numberButtonText,
     textAlign: "center",
     fontWeight: "bold",
-  },  
+  },
   // New style for How to Play button
   howToPlayButton: {
     marginTop: 10,
@@ -612,11 +618,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 10,
     fontSize: 18,
-    marginTop: 10,  // Adjust the margin as needed
-    color: 'black',
+    marginTop: 10, // Adjust the margin as needed
+    color: "black",
     fontWeight: "bold",
     alignItems: "center",
-    position: "relative",  // Added to position the squareBorder
+    position: "relative", // Added to position the squareBorder
   },
 });
 

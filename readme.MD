@@ -17,9 +17,8 @@ yarn start
     b. Hint: Tap a cell and click hint. Max 3 hints per game
 3. If a user clicks on the wrong place, this should have 3 outcomes: 
     a. Is the right move from the solvedSudoku, so allow it
-    b. Is not the right move from the solvedSudoku, but it's not illegal, so prompt that "Oops! That's not where it goes
-    c. Is not a legal move, so prompt that this movement is not possible
-    Note: I don't think this requires an alert, because that interrumpts the user flow. Think of something less invasive!
+    b. Is not the right move from the solvedSudoku, but it's not illegal, so prompt that "Oops! That's not where it goes" but this souldn't interrupt the user flow (not an alert)
+    c. Is not a legal move in sudoku, so prompt that this movement is not possible with an alert
 4. Add a rating feature: Prompt the user to rate the app after 10 minutes on it
 5. Add a donation feature: After 20 minutes, prompt the user if they want to donate. Leave the option in the home page or somewhere where it doesn't affect the experience
 6. Add app icons
