@@ -36,3 +36,6 @@ yarn-error.*
 
 # coverage
 coverage/
+
+build.gradle
+your_key_name.keystore
