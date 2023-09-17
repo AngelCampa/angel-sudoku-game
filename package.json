@@ -9,7 +9,7 @@
     "web": "expo start --web",
     "test": "jest",
     "android-build-release": "react-native bundle --platform android --dev false --entry-file App.tsx --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && cd android && gradlew assembleRelease",
-    "expo-eas-android-bundle": "eas build -p android"
+    "expo-eas-android-prod": "eas build -p android"
   },
   "dependencies": {
     "@babel/preset-react": "^7.22.5",
@@ -35,9 +35,7 @@
     "@types/jest": "^29.5.4",
     "@types/react": "~18.2.14",
     "eas-cli": "^5.2.0",
-    "gradle": "^1.2.4",
     "jest": "^29.6.4",
-    "metro": "^0.79.0",
     "ts-jest": "^29.1.1",
     "typescript": "^5.1.3"
   },

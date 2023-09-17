@@ -39,3 +39,4 @@ coverage/
 
 build.gradle
 your_key_name.keystore
+service-account.json
