@@ -11,6 +11,7 @@ yarn start
 3. Scan the QR Code
 
 ## TODO:
+### In all games it's the same sudoku, I need to fix this ASAP
 1. Eliminate all unused dependencies from package.json
 2. Add a cheat "Solve Puzzle" functionality
     a. That a user can see the whole solved sudoku
