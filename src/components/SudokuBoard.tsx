@@ -14,14 +14,6 @@ import { RouteProp } from "@react-navigation/native";
 // Define the Sudoku grid data type
 export type SudokuGrid = (number | null)[][];
 
-// Helper function to shuffle an array
-export const shuffleArray = (arr: number[]) => {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-};
-
 // Helper function to generate a solved Sudoku grid using backtracking
 export const generateSolvedSudoku = () => {
   const grid: SudokuGrid = Array.from({ length: 9 }, () => Array(9).fill(null));
@@ -52,7 +44,10 @@ export const generateSolvedSudoku = () => {
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
         if (grid[row][col] === null) {
-          for (let num = 1; num <= 9; num++) {
+          const randomNumbers = Array.from({ length: 9 }, (_, index) => index + 1);
+          shuffleArray(randomNumbers);
+  
+          for (const num of randomNumbers) {
             if (isValidPlacement(row, col, num)) {
               grid[row][col] = num;
               if (solve()) {
@@ -67,6 +62,13 @@ export const generateSolvedSudoku = () => {
     }
     return true;
   };
+  
+  const shuffleArray = (array: any[]) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  };  
 
   if (solve()) {
     return grid;
