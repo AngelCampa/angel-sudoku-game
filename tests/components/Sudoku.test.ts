@@ -1,60 +1,74 @@
-import { SudokuGrid } from '../../src/components/SudokuBoard'; // Adjust the path as needed
-import { generateSolvedSudoku } from '../../src/components/SudokuBoard'; // Add this import
+import {
+  generateSolvedSudoku,
+  generateSudoku,
+  checkCorrectness,
+  isPlacementValid,
+  checkWinningCondition,
+  SudokuGrid,
+} from '../../src/utils/sudokuFunctions';
 
-const isValidSudoku = (grid: SudokuGrid): boolean => {
-    const seenInRows = Array(9)
-      .fill(null)
-      .map(() => new Set<number>());
-  
-    const seenInCols = Array(9)
-      .fill(null)
-      .map(() => new Set<number>());
-  
-    const seenInBoxes = Array(9)
-      .fill(null)
-      .map(() => new Set<number>());
-  
-    for (let row = 0; row < 9; row++) {
-      for (let col = 0; col < 9; col++) {
-        const num = grid[row][col];
-        if (num !== null) {
-          // Check the current row
-          if (seenInRows[row].has(num)) {
-            return false;
-          }
-          seenInRows[row].add(num);
-  
-          // Check the current column
-          if (seenInCols[col].has(num)) {
-            return false;
-          }
-          seenInCols[col].add(num);
-  
-          // Check the current 3x3 box
-          const boxIndex = Math.floor(row / 3) * 3 + Math.floor(col / 3);
-          if (seenInBoxes[boxIndex].has(num)) {
-            return false;
-          }
-          seenInBoxes[boxIndex].add(num);
-        }
-      }
-    }
-  
-    return true;
-  };
-  
-  const solvedSudoku = generateSolvedSudoku();
+// Mock the React Native Alert component
+jest.mock('react-native/Libraries/Alert/Alert', () => ({
+  alert: jest.fn(),
+}));
 
-if (isValidSudoku(solvedSudoku)) {
-  console.log("The solved Sudoku grid is valid.");
-} else {
-  console.log("The solved Sudoku grid is invalid.");
-}
-
-describe('SudokuBoard', () => {
-    // ...
-    test('The generated Sudoku grid is valid', () => {
-        expect(isValidSudoku(solvedSudoku)).toBe(true);
+describe('Sudoku Functions', () => {
+  describe('generateSolvedSudoku', () => {
+    it('should generate a valid solved Sudoku grid', () => {
+      const solvedSudoku = generateSolvedSudoku();
+      // Write tests to validate that the generated grid is a valid solved Sudoku
+      // ...
     });
+  });
+
+  describe('generateSudoku', () => {
+    it('should generate a valid Sudoku grid based on difficulty', () => {
+      // Write tests to validate the generated grid based on difficulty
+      // ...
     });
-    
+  });
+
+  describe('checkCorrectness', () => {
+    it('should return true for a correct Sudoku grid', () => {
+      const correctGrid: SudokuGrid = [
+        // Insert a valid completed Sudoku grid here
+      ];
+      const isCorrect = checkCorrectness(correctGrid);
+      expect(isCorrect).toBe(true);
+    });
+
+    it('should return false for an incorrect Sudoku grid', () => {
+      const incorrectGrid: SudokuGrid = [
+        // Insert an invalid completed Sudoku grid here
+      ];
+      const isCorrect = checkCorrectness(incorrectGrid);
+      expect(isCorrect).toBe(false);
+    });
+  });
+
+  describe('isPlacementValid', () => {
+    it('should return true for a valid placement', () => {
+      // Write tests for valid placements
+      // ...
+    });
+
+    it('should return false for an invalid placement', () => {
+      // Write tests for invalid placements
+      // ...
+    });
+  });
+
+  describe('checkWinningCondition', () => {
+    it('should display a win message for a correct Sudoku grid', () => {
+      const originalAlert = jest.requireMock('react-native/Libraries/Alert/Alert').alert;
+
+      const correctGrid: SudokuGrid = [
+        // Insert a valid completed Sudoku grid here
+      ];
+
+      checkWinningCondition(correctGrid);
+
+      expect(originalAlert).toHaveBeenCalledWith('Congratulations!', 'You solved the puzzle!');
+    });
+  });
+});
