@@ -346,23 +346,23 @@ const SudokuBoard = ({ route }: SudokuBoardProps) => {
         },
         {
           text: "Restart",
-          onPress: async () => {
+          onPress: () => {
             // Logic to reset the Sudoku grid to a new puzzle
-            const newGrid = generateSudoku(difficulty); // Pass the difficulty
+            const newGrid = generateSudoku(difficulty); // Generate a new Sudoku grid
             setGrid(newGrid);
             setInputMode(false);
             setSelectedNumber(null);
             setCellSelected(
               Array.from({ length: 9 }, () => Array(9).fill(false))
             );
-
+  
             // Clear the saved game state
-            await AsyncStorage.removeItem("sudokuGameState");
+            AsyncStorage.removeItem("sudokuGameState");
           },
         },
       ]
     );
-  };
+  };  
 
   // Save the game state to local storage
   const saveGameState = async (gameState: SudokuGrid) => {
