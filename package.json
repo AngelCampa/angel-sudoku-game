@@ -10,7 +10,8 @@
     "web": "expo start --web",
     "test": "jest",
     "android-build-release": "react-native bundle --platform android --dev false --entry-file App.tsx --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && cd android && gradlew assembleRelease",
-    "expo-eas-android-prod": "eas build -p android"
+    "expo-android": "eas build -p android",
+    "expo-submit-android": "eas build -p android && eas submit --platform android --latest"
   },
   "dependencies": {
     "@babel/preset-react": "^7.22.5",

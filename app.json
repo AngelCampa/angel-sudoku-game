@@ -13,7 +13,8 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.farshadow97.angelsudokugame"
+      "package": "com.farshadow97.angelsudokugame",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/favicon.png"
